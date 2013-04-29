@@ -52,15 +52,27 @@ module WillPaginate
         text = @template.will_paginate_translate(:page_gap) { '&hellip;' }
         %(<span class="gap">#{text}</span>)
       end
+
+      def item_range
+        "<span class='gap'>(#{@collection.offset + 1} - #{@collection.offset + @collection.length})</span>"
+      end
       
       def previous_page
         num = @collection.current_page > 1 && @collection.current_page - 1
-        previous_or_next_page(num, @options[:previous_label], 'previous_page')
+        if @options[:pinster_without_page_links]
+          pinster_previous_or_next_page(num, @options[:previous_label], 'previous_page')
+        else
+          previous_or_next_page(num, @options[:previous_label], 'previous_page')
+        end
       end
       
       def next_page
         num = @collection.current_page < total_pages && @collection.current_page + 1
-        previous_or_next_page(num, @options[:next_label], 'next_page')
+        if @optionpinster_previous_or_next_pages[:pinster_without_page_links]
+          pinster_previous_or_next_page(num, @options[:next_label], 'next_page')
+        else
+          previous_or_next_page(num, @options[:next_label], 'next_page')
+        end
       end
       
       def previous_or_next_page(page, text, classname)
@@ -71,6 +83,18 @@ module WillPaginate
         end
       end
       
+      def pinster_previous_or_next_page(page, text, classname)
+        if page
+          res = link(text, page, :class => classname)
+          classname == "previous_page" ? res += tag(:em, page + 1 , :class => 'current') : res = item_range + res
+        else
+          res = tag(:span, text, :class => classname + ' disabled')
+          res += tag(:em, @collection.current_page , :class => 'current')
+        end
+        "<span class="+"#{classname == "previous_page" ? "pinster-previous-page" : "pinster-next-page"}"+">"+res+"</span>"
+      end
+
+
       def html_container(html)
         tag(:div, html, container_attributes)
       end
