@@ -68,7 +68,7 @@ module WillPaginate
       
       def next_page
         num = @collection.current_page < total_pages && @collection.current_page + 1
-        if @optionpinster_previous_or_next_pages[:pinster_without_page_links]
+        if @options[:pinster_without_page_links]
           pinster_previous_or_next_page(num, @options[:next_label], 'next_page')
         else
           previous_or_next_page(num, @options[:next_label], 'next_page')
@@ -86,11 +86,12 @@ module WillPaginate
       def pinster_previous_or_next_page(page, text, classname)
         if page
           res = link(text, page, :class => classname)
-          classname == "previous_page" ? res += tag(:em, page + 1 , :class => 'current') : res = item_range + res
+          em = tag(:em, page + 1 , :class => 'current')
         else
           res = tag(:span, text, :class => classname + ' disabled')
-          res += tag(:em, @collection.current_page , :class => 'current')
+          em = tag(:em, @collection.current_page , :class => 'current')
         end
+        res = classname == "previous_page" ? res + em : item_range + res
         "<span class="+"#{classname == "previous_page" ? "pinster-previous-page" : "pinster-next-page"}"+">"+res+"</span>"
       end
 
